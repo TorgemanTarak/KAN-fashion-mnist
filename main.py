@@ -75,7 +75,7 @@ def main(args):
     xtrain = normalize_fn(xtrain,mean_xtrain,std_xtrain)
     xtest = normalize_fn(xtest,mean_xtrain,std_xtrain)
 
-
+    xtrain,ytrain,xtest,ytest = create_validation_set(xtrain,ytrain,0.2)
     
 
 
@@ -107,8 +107,12 @@ def main(args):
 
     if args.nn_type == "transformer":
         xtrain = xtrain.reshape(-1, 1, 28, 28)
-    xtest = xtest.reshape(-1, 1, 28, 28)
-    chw = (1, 28, 28)
+        xtest = xtest.reshape(-1, 1, 28, 28)
+        chw = (1, 28, 28)
+    
+    if args.nn_type == "kan":
+        xtest = xtest.reshape(-1,28*28)
+        model = KAN([28 * 28, 64, 10])     
     
     # Ajustements des paramètres
     n_patches = 7  # Essayez différentes valeurs comme 4, 7, ou 14
@@ -129,10 +133,7 @@ def main(args):
      
     )
     """
-    if args.nn_type == "kan":
-         xtrain = xtrain.reshape(-1, 784)
-         xtest = xtest.reshape(-1, 784)
-         model = KAN(input_size=784, hidden_layer_size=128, inner_size=64, n_classes=get_n_classes(ytrain), activation=nn.ReLU)
+
 
     model.to(device)
     print("model running on device :",next(model.parameters()).device)
